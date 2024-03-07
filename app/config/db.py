@@ -25,6 +25,7 @@ async def connect_and_init_db():
             minPoolSize=Config.app_settings.get('min_db_conn_count'),
             uuidRepresentation="standard",
         )
+        print("Connected to database")
     except Exception as e:
         raise
 
