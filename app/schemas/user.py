@@ -23,3 +23,7 @@ async def update_user(conn, user_data: dict, user_email: str):
     updated_user = await collection.find_one({"_id": user_document_id})
     return {"Updated user": updated_user, "Modified Count": result.modified_count}
     
+async def get_all_users(conn):
+    collection = conn[__db_collection]
+    cursor= collection.find
+    return await cursor.to_list()
