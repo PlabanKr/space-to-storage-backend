@@ -15,4 +15,5 @@ class Config:
         'db_password': os.getenv('DB_PASSWORD'),
         'max_db_conn_count': int(os.getenv('MAX_DB_CONN_COUNT')),
         'min_db_conn_count': int(os.getenv('MIN_DB_CONN_COUNT')),
+        'secret_key': os.getenv('SECRET_KEY'),
     }
