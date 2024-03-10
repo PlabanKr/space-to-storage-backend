@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Depends
 
 from ..config.db import get_db
-from ..models.user_models import UserLogin, UserSignup, User
-from ..schemas.user import get_user, create_user
+from ..models.user_models import UserLogin, UserSignup, User, UserUpdate
+from ..schemas.user import get_user, create_user, update_user
 from ..utils.auth import verify_password, get_password_hash
 
 router = APIRouter()
@@ -58,19 +58,31 @@ async def signup(user_data: UserSignup, db=Depends(get_db)):
 #     return {"message": "Logged in successfully"}
 
 
-# @router.get("/profile")
-# async def userprofile():
-#     return {"message": "User Profile Updated Successfully"}
+@router.put("/update")
+async def update(update_data: UserUpdate, db=Depends(get_db)):
+    update_data = dict(update_data)
 
-# @router.get("/admin")
-# async def admin():
-#     return {"message": "Admin mode activated"}
+    if not update_data:
+        raise HTTPException(status_code=400, detail="Invalid input")
+    
+    email = update_data["email"]
+    updated_fields = update_data["updated_fields"]
+    print("Updated fields: ", updated_fields)
 
-# @router.get("/user")
-# async def user():
-#     return {"message": "User mode activated"}
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
+    existing_user = await get_user(db, email)
+    if not existing_user:
+        raise HTTPException(status_code=404, detail="User does not exists")
+    
+    try:
+        updated_user = await update_user(db, updated_fields, email)
+    except Exception as e:
+        print(e)
+        print(e.args)
+        raise HTTPException(status_code=500, detail="Failed to update user") from e
+    
+    return {"message": "User updated successfully", "user": f"{updated_user}"}
 
-# @router.exception_handler(HTTPException)
-# async def http_exception_handler(request, exc):
-#     return JSONResponse(status_code=exc.status_code, content={"message": exc.detail})
-
+    
