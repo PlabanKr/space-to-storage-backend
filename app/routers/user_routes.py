@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Depends
 
 from ..config.db import get_db
 from ..models.user_models import UserLogin, UserSignup, User, UserUpdate
-from ..schemas.user import get_user, create_user, update_user
+from ..schemas.user import get_user, create_user, update_user, get_all_users
 from ..utils.auth import verify_password, get_password_hash
 
 router = APIRouter()
@@ -86,3 +86,12 @@ async def update(update_data: UserUpdate, db=Depends(get_db)):
     return {"message": "User updated successfully", "user": f"{updated_user}"}
 
     
+@router.get("/all")
+async def all_users(db=Depends(get_db)):
+    try:
+        all_users_list = await get_all_users(db)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=500, detail="Failed to get user") from e
+    
+    return {"users":f"{all_users_list}"}
