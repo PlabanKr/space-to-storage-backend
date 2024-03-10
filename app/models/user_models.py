@@ -18,3 +18,6 @@ class User(BaseModel):
     password: str
     is_admin: bool
     
+class UserUpdate(BaseModel):
+    email: EmailStr
+    updated_fields: dict
